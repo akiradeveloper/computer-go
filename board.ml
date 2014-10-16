@@ -4,6 +4,12 @@ type t = int array array
 let make n = make_matrix (n+2) (n+2) 2
 ;;
 
+let flip_color = function
+  | 0 -> 1
+  | 1 -> 0
+  | _ -> assert false
+;;
+
 let show b = 
   Printf.printf "   [1 2 3 4 5 6 7 8 9 10111213141516171819]\n" ;
   let p i = match i with
@@ -14,35 +20,40 @@ let show b =
   for i = 1 to (length b) - 2 do
     Printf.printf "%2d| " i;
     for j = 1 to (length b) - 2 do
-      Printf.printf "%c " (p (get (get b i) j)) ;
+      (* Printf.printf "%c " (p (get (get b i) j)) ; *)
+      Printf.printf "%c " @@ p b.(i).(j) ;
     done ;
     print_newline () ;
   done
 ;;
 
-let put_stone t (i, j) a = set (get t i) j a
+(* let put_stone t (i, j) a = set (get t i) j a *)
+(* ;; *)
+let put_stone t (i, j) a =
+  t.(i).(j) <- a
 ;;
 
 (* do_put_stones can be implemented in either way *)
-let rec do_put_stones t xs =
-  match xs with
-  | [] -> ()
-  | (i, j, a) :: xs' ->
-    put_stone t (i, j) a ;
-    Printf.printf "(%d,%d,%d)\n" i j a ;
-    do_put_stones t xs'
-;;
-(* let do_put_stones t xs = *)
-(*   List.iter (fun (i, j, a) -> put_stone t (i, j) a) xs *)
+(* let rec do_put_stones t xs = *)
+(*   match xs with *)
+(*   | [] -> () *)
+(*   | (i, j, a) :: xs' -> *)
+(*     put_stone t (i, j) a ; *)
+(*     Printf.printf "(%d,%d,%d)\n" i j a ; *)
+(*     do_put_stones t xs' *)
 (* ;; *)
+let do_put_stones t xs =
+  List.iter (fun (i, j, a) -> put_stone t (i, j) a) xs
+;;
 
 let put_stones t xs =
   let rec zip xs ys =
     match (xs, ys) with
-    | ([], []) -> []
+    | ([], _) -> []
+    | (_, []) -> []
     | ((i,j) :: xs', a :: ys') -> (i, j, a) :: (zip xs' ys') in
   let alt_color xs = zip xs (List.mapi (fun i _ -> i mod 2) xs) in
-  do_put_stones t (alt_color xs)
+  do_put_stones t @@ alt_color xs
 ;;
 
 let do_remove_stones b xs = ()
