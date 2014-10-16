@@ -45,10 +45,17 @@ let put_stones t xs =
   do_put_stones t (alt_color xs)
 ;;
 
+let do_remove_stones b xs = ()
+
 let can_put t (i, j) = assert false
 ;;
 
 let b = make 19 ;;
-let l = [(4,4); (16,16); (17,14); (14,16); (16,10)] ;;
-put_stones b l ;
+
+(* let l = [(4,4); (16,16); (17,14); (14,16); (16,10)] ;; *)
+(* put_stones b l ; *)
+
+let l = [(10,10,0); (10,9,1); (10,11,1); (9,10,1); (11,10,1)] ;;
+do_put_stones b l;
+do_remove_stones b (10,10,0);
 show b ;
