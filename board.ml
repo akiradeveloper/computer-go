@@ -1,7 +1,20 @@
 open Array
 type t = int array array
 
-let make n = make_matrix (n+2) (n+2) 2
+(*
+ * black = 0
+ * while = 1
+ * fridge = 2
+ * empty = 3
+ *)
+let make n =
+  let b = make_matrix (n+2) (n+2) 2 in
+  for i = 1 to n do
+    for j = 1 to n do
+      b.(i).(j) <- 3
+    done
+  done ;
+  b
 ;;
 
 let flip_color = function
@@ -15,10 +28,11 @@ let show b =
   let p i = match i with
   | 0 -> '@'
   | 1 -> 'O'
-  | _ -> ' '
+  | 3 -> ' '
+  | _ -> assert false
   in
   for i = 1 to (length b) - 2 do
-    Printf.printf "%2d| " i;
+    Printf.printf "%2d| " i ;
     for j = 1 to (length b) - 2 do
       (* Printf.printf "%c " (p (get (get b i) j)) ; *)
       Printf.printf "%c " @@ p b.(i).(j) ;
