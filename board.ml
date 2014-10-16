@@ -70,7 +70,20 @@ let put_stones t xs =
   do_put_stones t @@ alt_color xs
 ;;
 
-let do_remove_stones b xs = ()
+
+module IntSet = Set.Make(
+  struct
+    let compare = Pervasives.compare
+    type t = int
+  end)
+;;
+(* TODO *)
+let do_remove_stones b (i, j, a) =
+  let s = IntSet.empty in
+  let to_int (i, j) = (i lsl 5) + j in
+  let visit (i, j, a) =
+    IntSet.add (to_int (i, j)) s in
+  ()
 
 let can_put t (i, j) = assert false
 ;;
