@@ -1,6 +1,9 @@
 open Array
 type t = int array array
+
 let make n = make_matrix (n+2) (n+2) 2
+;;
+
 let show b = 
   Printf.printf "   [1 2 3 4 5 6 7 8 9 10111213141516171819]\n" ;
   let p i = match i with
@@ -15,13 +18,37 @@ let show b =
     done ;
     print_newline () ;
   done
+;;
+
 let put_stone t (i, j) a = set (get t i) j a
+;;
+
+(* do_put_stones can be implemented in either way *)
+let rec do_put_stones t xs =
+  match xs with
+  | [] -> ()
+  | (i, j, a) :: xs' ->
+    put_stone t (i, j) a ;
+    Printf.printf "(%d,%d,%d)\n" i j a ;
+    do_put_stones t xs'
+;;
+(* let do_put_stones t xs = *)
+(*   List.iter (fun (i, j, a) -> put_stone t (i, j) a) xs *)
+(* ;; *)
+
+let put_stones t xs =
+  let rec zip xs ys =
+    match (xs, ys) with
+    | ([], []) -> []
+    | ((i,j) :: xs', a :: ys') -> (i, j, a) :: (zip xs' ys') in
+  let alt_color xs = zip xs (List.mapi (fun i _ -> i mod 2) xs) in
+  do_put_stones t (alt_color xs)
+;;
+
 let can_put t (i, j) = assert false
+;;
 
 let b = make 19 ;;
-put_stone b (4, 4) 0 ;
-put_stone b (16, 16) 1 ;
-put_stone b (17, 14) 0 ;
-put_stone b (14, 16) 1 ;
-put_stone b (16, 10) 0 ;
+let l = [(4,4); (16,16); (17,14); (14,16); (16,10)] ;;
+put_stones b l ;
 show b ;
