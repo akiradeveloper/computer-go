@@ -125,9 +125,31 @@ let will_take_one t (i, j, a) =
   !r
 ;;
 
+(* before put *)
 let is_kou_take t (i, j, a) =
   is_single_suicide t (i, j, a)  && 
   will_take_one t (i, j, a)
+;;
+
+(* before put *)
+let is_suicide t (i, j, a) =
+  let r = ref false in
+  begin
+    t.matrix.(i).(j) <- a ;
+    r := remove_list t (i, j, a) = [] ;
+    t.matrix.(i).(j) <- 3 ;
+  end ;
+  !r
+;;
+
+(* before put *)
+let can_put t (i, j, a) =
+  let not_empty = t.matrix.(i).(j) < 2 in
+  let koudate_need = match t.kou with
+  | Some (i, j) -> true
+  | _ -> false
+  in
+  not_empty || koudate_need || is_suicide t (i, j, a)
 ;;
 
 let remove_stones t xs =
