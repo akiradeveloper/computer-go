@@ -65,8 +65,8 @@ let put_stones t xs =
   do_put_stones t @@ alt_color xs
 
 let out_board t = function
-  | (0, _) | (20, _) | (_, 0) | (_, 20) -> false
-  | _ -> true
+  | (0, _) | (20, _) | (_, 0) | (_, 20) -> true
+  | _ -> false
 
 let pos2int (i, j) = (i lsl 5) + j
 let int2pos n = (n lsr 5, n land 31)
@@ -77,48 +77,65 @@ let search_hole t (i, j) =
       if t.(i).(j+1) == 3 then true else
         if t.(i).(j-1) == 3 then true else false
 
+let remove_stones b xs =
+  List.iter (fun (i, j) -> b.(i).(j) <- 3) xs
+
 module IntSet = Set.Make(
   struct
     let compare = Pervasives.compare
     type t = int
   end)
-;;
 
-(* TODO *)
-let do_remove_stones b (i, j, color) =
-  let poss = ref [] in
-  let s = ref IntSet.empty in
+(* Find stones of the same color that can be removed. *)
+let remove_list b (i, j, init) =
+  let lis = ref [] in
   let found_hole = ref false in
+  let s = ref IntSet.empty in
   let rec visit (i, j, a) =
-    if a != color then ()
-    else
-      if out_board b (i, j) then ()
-      else
-        if !found_hole then ()
-        else
+    Printf.printf "visit (%d,%d,%d)\n" i j a;
+    if a != init then () else
+      if out_board b (i, j) then () else
+        if !found_hole then () else
           if search_hole b (i, j) then
-            found_hole := true 
+            found_hole := true
           else
-            if IntSet.mem (pos2int (i, j)) !s then
-              poss := (i, j) :: !poss
-            else
+            if IntSet.mem (pos2int (i, j)) !s then () else
+            begin
+              Printf.printf "For the first time in forever ~~~\n" ;
+              lis := (i, j) :: !lis ;
+
               s := IntSet.add (pos2int (i, j)) !s ;
-              visit (i+1, j, flip_color a) ;
-              visit (i-1, j, flip_color a) ;
-              visit (i, j+1, flip_color a) ;
-              visit (i, j-1, flip_color a) ;
+              IntSet.iter (fun n -> Printf.printf "%d " n) !s ;
+              print_newline () ;
+
+              visit (i+1, j, b.(i+1).(j)) ;
+              visit (i-1, j, b.(i-1).(j)) ;
+              visit (i, j+1, b.(i).(j+1)) ;
+              visit (i, j-1, b.(i).(j-1)) ;
+            end ;
   in
-  visit (i, j, color) ;
-  if !found_hole then [] else !poss
+  visit (i, j, init) ;
+  Printf.printf "found hole: %b\nlist: " !found_hole ;
+  List.iter (fun (i, j) -> Printf.printf "(%d,%d)" i j) !lis ;
+  print_newline () ;
+  if !found_hole then [] else !lis 
 
 let can_put t (i, j) = assert false
 
-let b = make 19 ;;
-
+(* let b = make 19 ;; *)
 (* let l = [(4,4); (16,16); (17,14); (14,16); (16,10)] ;; *)
 (* put_stones b l ; *)
 
-let l = [(10,10,0); (10,9,1); (10,11,1); (9,10,1); (11,10,1)] ;;
-do_put_stones b l ;
-do_remove_stones b (10,10,0) ;
-show b ;
+let remove_test init_list start =
+  let b = make 19 in begin
+    do_put_stones b init_list ;
+    remove_stones b @@ remove_list b start ;
+    show b ;
+  end
+;;
+
+remove_test [(10,10,0);(10,9,1);(10,11,1);(9,10,1);(11,10,1)] (10,10,0) ;
+remove_test [(10,10,0);(10,9,1);(10,11,1);(9,10,1);] (10,10,0) ;
+remove_test [(9,1,0);(8,1,1);(10,1,1);(9,2,1)] (9,1,0) ;
+remove_test [(10,10,0);(11,10,0);(9,10,1);(10,9,1);(10,11,1);(11,9,1);(11,11,1);(12,10,1)] (11,10,0) ;
+remove_test [(9,1,0);(8,1,0);(7,1,1);(10,1,1);(8,2,1);(9,2,1)] (9,1,0) ;
