@@ -6,6 +6,9 @@ type t = {
   kou: (int * int) option;
 }
 
+let surround (i, j) = [(i+1, j); (i-1, j); (i, j+1); (i, j-1)]
+;;
+
 (*
  * black = 0
  * while = 1
@@ -58,10 +61,7 @@ let int2pos n = (n lsr 5, n land 31)
 ;;
 
 let search_hole t (i, j) =
-  if t.matrix.(i+1).(j) == 3 then true else
-    if t.matrix.(i-1).(j) == 3 then true else
-      if t.matrix.(i).(j+1) == 3 then true else
-        if t.matrix.(i).(j-1) == 3 then true else false 
+  List.exists (fun (i, j) -> t.matrix.(i).(j) = 3) @@ surround (i, j)
 ;;
 
 module IntSet = Set.Make (
@@ -92,10 +92,7 @@ let remove_list t (i, j, init) =
               (* IntSet.iter (fun n -> Printf.printf "%d " n) !s ; *)
               print_newline () ;
 
-              visit (i+1, j, t.matrix.(i+1).(j)) ;
-              visit (i-1, j, t.matrix.(i-1).(j)) ;
-              visit (i, j+1, t.matrix.(i).(j+1)) ;
-              visit (i, j-1, t.matrix.(i).(j-1)) ;
+              List.iter (fun (i, j) -> visit (i, j, t.matrix.(i).(j))) @@ surround (i, j)
             end ;
   in
   visit (i, j, init) ;
@@ -108,17 +105,13 @@ let remove_list t (i, j, init) =
 (* after put *)
 let remove_list_by_put t (i, j, a) =
   let a' = flip_color a in
-  List.fold_left List.append [] [
-    remove_list t (i+1, j, a');
-    remove_list t (i-1, j, a');
-    remove_list t (i, j+1, a');
-    remove_list t (i, j-1, a') ]
+  List.fold_left List.append [] @@
+  List.map (fun (i, j) -> remove_list t (i, j, a')) @@ surround (i, j)
 ;;
 
 let is_single_suicide t (i, j, a) =
   let c = flip_color a in
-  List.for_all (fun (i, j) -> t.matrix.(i).(j) == c)
-    [(i+1, j); (i-1, j); (i, j+1); (i, j-1)]
+  List.for_all (fun (i, j) -> t.matrix.(i).(j) == c) @@ surround (i, j)
 ;;
 
 (* before put *)
@@ -189,8 +182,8 @@ let remove_test init_list start =
 (* remove_test [(10,10,0);(10,9,1);(10,11,1);(9,10,1);(11,10,1)] (10,10,0) ; *)
 (* remove_test [(10,10,0);(10,9,1);(10,11,1);(9,10,1);] (10,10,0) ; *)
 (* remove_test [(9,1,0);(8,1,1);(10,1,1);(9,2,1)] (9,1,0) ; *)
-(* remove_test [(10,10,0);(11,10,0);(9,10,1);(10,9,1);(10,11,1);(11,9,1);(11,11,1);(12,10,1)] (11,10,0) ; *)
-(* remove_test [(9,1,0);(8,1,0);(7,1,1);(10,1,1);(8,2,1);(9,2,1)] (9,1,0) ; *)
+remove_test [(10,10,0);(11,10,0);(9,10,1);(10,9,1);(10,11,1);(11,9,1);(11,11,1);(12,10,1)] (11,10,0) ;
+remove_test [(9,1,0);(8,1,0);(7,1,1);(10,1,1);(8,2,1);(9,2,1)] (9,1,0) ;
 
 (* expect double kill *)
 put_stones t [(2,1);(2,2);(2,3);(1,1);(1,4);(1,3);(1,2)] ;
