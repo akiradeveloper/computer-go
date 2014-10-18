@@ -144,12 +144,12 @@ let is_suicide t (i, j, a) =
 
 (* before put *)
 let can_put t (i, j, a) =
-  let not_empty = t.matrix.(i).(j) < 2 in
+  let stone_exists = t.matrix.(i).(j) < 2 in
   let koudate_need = match t.kou with
   | Some (i, j) -> true
   | _ -> false
   in
-  not_empty || koudate_need || is_suicide t (i, j, a)
+  not @@ stone_exists || koudate_need || is_suicide t (i, j, a)
 ;;
 
 let remove_stones t xs =
