@@ -120,6 +120,14 @@ let remove_list b (i, j, init) =
   print_newline () ;
   if !found_hole then [] else !lis 
 
+let remove_list_by_put b (i, j, a) =
+  let a' = flip_color a in
+  List.fold_left List.append [] [
+    remove_list b (i+1, j, a');
+    remove_list b (i-1, j, a');
+    remove_list b (i, j+1, a');
+    remove_list b (i, j-1, a') ]
+
 let can_put t (i, j) = assert false
 
 (* let b = make 19 ;; *)
