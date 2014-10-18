@@ -105,6 +105,7 @@ let remove_list t (i, j, init) =
   if !found_hole then [] else !lis
 ;;
 
+(* after put *)
 let remove_list_by_put t (i, j, a) =
   let a' = flip_color a in
   List.fold_left List.append [] [
@@ -114,7 +115,26 @@ let remove_list_by_put t (i, j, a) =
     remove_list t (i, j-1, a') ]
 ;;
 
-let can_put t (i, j) = assert false
+let is_single_suicide t (i, j, a) =
+  let c = flip_color a in
+  List.for_all (fun (i, j) -> t.matrix.(i).(j) == c)
+    [(i+1, j); (i-1, j); (i, j+1); (i, j-1)]
+;;
+
+(* before put *)
+let will_take_one t (i, j, a) =
+  let r = ref false in
+  begin
+    t.matrix.(i).(j) <- a ;
+    r := List.length @@ remove_list_by_put t (i, j, a) = 1;
+    t.matrix.(i).(j) <- 3 ;
+  end ;
+  !r
+;;
+
+let is_kou_take t (i, j, a) =
+  is_single_suicide t (i, j, a)  && 
+  will_take_one t (i, j, a)
 ;;
 
 let remove_stones t xs =
