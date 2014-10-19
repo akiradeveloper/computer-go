@@ -32,6 +32,11 @@ let flip_color = function
 ;;
 
 let show t = 
+  let () = 
+    match t.kou with
+    | Some (i, j) -> Printf.printf "kou: (%d, %d)\n" i j
+    | None -> Printf.printf "kou: -\n"
+  in
   Printf.printf "   [1 2 3 4 5 6 7 8 9 10111213141516171819]\n" ;
   let p i = match i with
   | 0 -> '@'
@@ -146,10 +151,10 @@ let is_kou_take t (i, j, a) =
 ;;
 
 (* before put *)
-let can_put t (i, j, a) =
+let can_put t (i, j, a): bool =
   let stone_exists = t.matrix.(i).(j) < 2 in
   let koudate_need = match t.kou with
-  | Some (i, j) -> true
+  | Some (i', j') -> (i, j) = (i', j')
   | _ -> false
   in
   not @@ stone_exists || koudate_need || is_suicide t (i, j, a)
@@ -202,9 +207,12 @@ let remove_test init_list start =
 (* remove_test [(10,10,0);(10,9,1);(10,11,1);(9,10,1);(11,10,1)] (10,10,0) ; *)
 (* remove_test [(10,10,0);(10,9,1);(10,11,1);(9,10,1);] (10,10,0) ; *)
 (* remove_test [(9,1,0);(8,1,1);(10,1,1);(9,2,1)] (9,1,0) ; *)
-remove_test [(10,10,0);(11,10,0);(9,10,1);(10,9,1);(10,11,1);(11,9,1);(11,11,1);(12,10,1)] (11,10,0) ;
-remove_test [(9,1,0);(8,1,0);(7,1,1);(10,1,1);(8,2,1);(9,2,1)] (9,1,0) ;
+(* remove_test [(10,10,0);(11,10,0);(9,10,1);(10,9,1);(10,11,1);(11,9,1);(11,11,1);(12,10,1)] (11,10,0) ; *)
+(* remove_test [(9,1,0);(8,1,0);(7,1,1);(10,1,1);(8,2,1);(9,2,1)] (9,1,0) ; *)
 
 (* expect double kill *)
-put_stones t [(2,1);(2,2);(2,3);(1,1);(1,4);(1,3);(1,2)] ;
+(* put_stones t [(2,1);(2,2);(2,3);(1,1);(1,4);(1,3);(1,2)] ; *)
+put_stones t [(1,2);(2,2);(2,1);(3,1);(3,2)] ;
+put_stone t (1,1) 1 ;
 show t ;
+assert (not @@ can_put t (2,1,0)) ;
