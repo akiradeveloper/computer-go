@@ -3,7 +3,7 @@ open Array
 type t = {
   matrix: int array array ;
   (* the last kou taken *)
-  kou: (int * int) option;
+  mutable kou: (int * int) option;
 }
 
 let surround (i, j) = [(i+1, j); (i-1, j); (i, j+1); (i, j-1)]
@@ -161,9 +161,18 @@ let remove_stones t xs =
 
 let put_stone t (i, j) a =
   show t ;
+  let was_kou_take = is_kou_take t (i, j, a) in
   t.matrix.(i).(j) <- a ;
-  remove_stones t @@ remove_list_by_put t (i, j, a)
+  let xs = remove_list_by_put t (i, j, a) in
+  remove_stones t xs ;
+  (* if this put is kou-take then we remember the point *)
+  if was_kou_take then
+    t.kou <- Some (List.hd xs)
 ;;
+
+(* after pass, it is allowed to put on kou point *)
+let pass t =
+  t.kou <- None
 
 let do_put_stones t xs =
   List.iter (fun (i, j, a) -> put_stone t (i, j) a) xs
