@@ -157,7 +157,7 @@ let can_put t (i, j, a): bool =
   | Some (i', j') -> (i, j) = (i', j')
   | _ -> false
   in
-  not @@ stone_exists || koudate_need || is_suicide t (i, j, a)
+  not @@ (stone_exists || koudate_need || is_suicide t (i, j, a))
 ;;
 
 let remove_stones t xs =
@@ -173,6 +173,8 @@ let put_stone t (i, j) a =
   (* if this put is kou-take then we remember the point *)
   if was_kou_take then
     t.kou <- Some (List.hd xs)
+  else 
+    t.kou <- None
 ;;
 
 (* after pass, it is allowed to put on kou point *)
@@ -214,5 +216,9 @@ let remove_test init_list start =
 (* put_stones t [(2,1);(2,2);(2,3);(1,1);(1,4);(1,3);(1,2)] ; *)
 put_stones t [(1,2);(2,2);(2,1);(3,1);(3,2)] ;
 put_stone t (1,1) 1 ;
-show t ;
 assert (not @@ can_put t (2,1,0)) ;
+put_stone t (2,3) 0 ;
+put_stone t (3,3) 1 ;
+assert (can_put t (2,1,0)) ;
+put_stone t (2,1) 0 ;
+show t ;
