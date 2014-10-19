@@ -70,7 +70,7 @@ module IntSet = Set.Make (
     type t = int
   end )
 
-(* Find stones of the same color that can be removed. *)
+(* after put. find stones of the same color that can be removed. *)
 let remove_list t (i, j, init) =
   let lis = ref [] in
   let found_hole = ref false in
@@ -109,11 +109,6 @@ let remove_list_by_put t (i, j, a) =
   List.map (fun (i, j) -> remove_list t (i, j, a')) @@ surround (i, j)
 ;;
 
-let is_single_suicide t (i, j, a) =
-  let c = flip_color a in
-  List.for_all (fun (i, j) -> t.matrix.(i).(j) == c) @@ surround (i, j)
-;;
-
 (* before put *)
 let will_take_one t (i, j, a) =
   let r = ref false in
@@ -124,18 +119,30 @@ let will_take_one t (i, j, a) =
 ;;
 
 (* before put *)
-let is_kou_take t (i, j, a) =
-  is_single_suicide t (i, j, a)  && 
-  will_take_one t (i, j, a)
+let try_suicide t (i, j, a) =
+  let r = ref [] in
+  t.matrix.(i).(j) <- a ;
+  r := remove_list t (i, j, a) ;
+  t.matrix.(i).(j) <- 3 ;
+  !r
+;;
+
+(* before put *)
+let is_single_suicide t (i, j, a) =
+  match try_suicide t (i, j, a) with
+  | [_] -> true
+  | _ -> false
 ;;
 
 (* before put *)
 let is_suicide t (i, j, a) =
-  let r = ref false in
-  t.matrix.(i).(j) <- a ;
-  r := remove_list t (i, j, a) = [] ;
-  t.matrix.(i).(j) <- 3 ;
-  !r
+  try_suicide t (i, j, a) = []
+;;
+
+(* before put *)
+let is_kou_take t (i, j, a) =
+  is_single_suicide t (i, j, a)  && 
+  will_take_one t (i, j, a)
 ;;
 
 (* before put *)
@@ -152,23 +159,12 @@ let remove_stones t xs =
   List.iter (fun (i, j) -> t.matrix.(i).(j) <- 3) xs
 ;;
 
-(* let put_stone t (i, j) a = set (get t i) j a *)
-(* ;; *)
 let put_stone t (i, j) a =
   show t ;
   t.matrix.(i).(j) <- a ;
   remove_stones t @@ remove_list_by_put t (i, j, a)
 ;;
 
-(* do_put_stones can be implemented in either way *)
-(* let rec do_put_stones t xs = *)
-(*   match xs with *)
-(*   | [] -> () *)
-(*   | (i, j, a) :: xs' -> *)
-(*     put_stone t (i, j) a ; *)
-(*     Printf.printf "(%d,%d,%d)\n" i j a ; *)
-(*     do_put_stones t xs' *)
-(* ;; *)
 let do_put_stones t xs =
   List.iter (fun (i, j, a) -> put_stone t (i, j) a) xs
 ;;
