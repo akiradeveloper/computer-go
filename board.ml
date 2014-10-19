@@ -12,7 +12,7 @@ let surround (i, j) = [(i+1, j); (i-1, j); (i, j+1); (i, j-1)]
 (*
  * black = 0
  * while = 1
- * fridge = 2
+ * outside = 2
  * empty = 3
  *)
 let make n =
@@ -164,7 +164,7 @@ let remove_stones t xs =
   List.iter (fun (i, j) -> t.matrix.(i).(j) <- 3) xs
 ;;
 
-let put_stone t (i, j) a =
+let put_stone t (i, j, a) =
   show t ;
   let was_kou_take = is_kou_take t (i, j, a) in
   t.matrix.(i).(j) <- a ;
@@ -182,7 +182,7 @@ let pass t =
   t.kou <- None
 
 let do_put_stones t xs =
-  List.iter (fun (i, j, a) -> put_stone t (i, j) a) xs
+  List.iter (fun (i, j, a) -> put_stone t (i, j, a)) xs
 ;;
 
 let put_stones t xs =
@@ -215,10 +215,10 @@ let remove_test init_list start =
 (* expect double kill *)
 (* put_stones t [(2,1);(2,2);(2,3);(1,1);(1,4);(1,3);(1,2)] ; *)
 put_stones t [(1,2);(2,2);(2,1);(3,1);(3,2)] ;
-put_stone t (1,1) 1 ;
+put_stone t (1,1,1) ;
 assert (not @@ can_put t (2,1,0)) ;
-put_stone t (2,3) 0 ;
-put_stone t (3,3) 1 ;
+put_stone t (2,3,0) ;
+put_stone t (3,3,1) ;
 assert (can_put t (2,1,0)) ;
-put_stone t (2,1) 0 ;
+put_stone t (2,1,0) ;
 show t ;
