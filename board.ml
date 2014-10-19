@@ -117,11 +117,9 @@ let is_single_suicide t (i, j, a) =
 (* before put *)
 let will_take_one t (i, j, a) =
   let r = ref false in
-  begin
-    t.matrix.(i).(j) <- a ;
-    r := List.length @@ remove_list_by_put t (i, j, a) = 1;
-    t.matrix.(i).(j) <- 3 ;
-  end ;
+  t.matrix.(i).(j) <- a ;
+  r := List.length @@ remove_list_by_put t (i, j, a) = 1;
+  t.matrix.(i).(j) <- 3 ;
   !r
 ;;
 
@@ -134,11 +132,9 @@ let is_kou_take t (i, j, a) =
 (* before put *)
 let is_suicide t (i, j, a) =
   let r = ref false in
-  begin
-    t.matrix.(i).(j) <- a ;
-    r := remove_list t (i, j, a) = [] ;
-    t.matrix.(i).(j) <- 3 ;
-  end ;
+  t.matrix.(i).(j) <- a ;
+  r := remove_list t (i, j, a) = [] ;
+  t.matrix.(i).(j) <- 3 ;
   !r
 ;;
 
@@ -159,11 +155,9 @@ let remove_stones t xs =
 (* let put_stone t (i, j) a = set (get t i) j a *)
 (* ;; *)
 let put_stone t (i, j) a =
-  begin
-    show t ;
-    t.matrix.(i).(j) <- a ;
-    remove_stones t @@ remove_list_by_put t (i, j, a)
-  end
+  show t ;
+  t.matrix.(i).(j) <- a ;
+  remove_stones t @@ remove_list_by_put t (i, j, a)
 ;;
 
 (* do_put_stones can be implemented in either way *)
@@ -194,11 +188,10 @@ let t = make 19 ;;
 (* put_stones b l ; *)
 
 let remove_test init_list start =
-  let t = make 19 in begin
-    do_put_stones t init_list ;
-    remove_stones t @@ remove_list t start ;
-    show t ;
-  end
+  let t = make 19 in
+  do_put_stones t init_list ;
+  remove_stones t @@ remove_list t start ;
+  show t ;
 ;;
 
 (* remove_test [(10,10,0);(10,9,1);(10,11,1);(9,10,1);(11,10,1)] (10,10,0) ; *)
