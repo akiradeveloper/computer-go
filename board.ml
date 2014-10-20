@@ -222,3 +222,14 @@ put_stone t (3,3,1) ;
 assert (can_put t (2,1,0)) ;
 put_stone t (2,1,0) ;
 show t ;
+
+(* ren *)
+
+type ren_attr = {
+  colo: int
+}
+
+let create_ren m =
+  let n = length m in 
+  let result = make_matrix n n (-1) in
+  result
