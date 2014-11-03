@@ -1,13 +1,12 @@
 open Array
 
 type t = {
-  matrix: int array array ;
+  matrix: int array array;
   (* the last kou taken *)
   mutable kou: (int * int) option;
 }
 
 let surround (i, j) = [(i+1, j); (i-1, j); (i, j+1); (i, j-1)]
-;;
 
 (*
  * black = 0
@@ -23,13 +22,12 @@ let make n =
     done
   done ;
   { matrix = b; kou = None }
-;;
+
 
 let flip_color = function
   | 0 -> 1
   | 1 -> 0
   | _ -> assert false
-;;
 
 let show t = 
   let () = 
@@ -45,29 +43,23 @@ let show t =
   | _ -> assert false
   in
   for i = 1 to (length t.matrix) - 2 do
-    Printf.printf "%2d| " i ;
+    Printf.printf "%2d| " i;
     for j = 1 to (length t.matrix) - 2 do
-      (* Printf.printf "%c " (p (get (get b i) j)) ; *)
-      Printf.printf "%c " @@ p t.matrix.(i).(j) ;
-    done ;
-    print_newline () ;
+      Printf.printf "%c " @@ p t.matrix.(i).(j);
+    done;
+    print_newline ();
   done
-;;
 
 let out_board t = function
   | (0, _) | (20, _) | (_, 0) | (_, 20) -> true
   | _ -> false
-;;
 
 let pos2int (i, j) = (i lsl 5) + j
-;;
 
 let int2pos n = (n lsr 5, n land 31)
-;;
 
 let search_hole t (i, j) =
   List.exists (fun (i, j) -> t.matrix.(i).(j) = 3) @@ surround (i, j)
-;;
 
 module IntSet = Set.Make (
   struct
@@ -91,58 +83,52 @@ let remove_list t (i, j, init) =
             if IntSet.mem (pos2int (i, j)) !s then () else
             begin
               (* Printf.printf "For the first time in forever ~~~\n" ; *)
-              lis := (i, j) :: !lis ;
+              lis := (i, j) :: !lis;
 
-              s := IntSet.add (pos2int (i, j)) !s ;
+              s := IntSet.add (pos2int (i, j)) !s;
               (* IntSet.iter (fun n -> Printf.printf "%d " n) !s ; *)
-              print_newline () ;
+              print_newline ();
 
               List.iter (fun (i, j) -> visit (i, j, t.matrix.(i).(j))) @@ surround (i, j)
-            end ;
+            end
   in
-  visit (i, j, init) ;
+  visit (i, j, init);
   (* Printf.printf "found hole: %b\nlist: " !found_hole ; *)
   (* List.iter (fun (i, j) -> Printf.printf "(%d,%d)" i j) !lis ; *)
   (* print_newline () ; *)
   if !found_hole then [] else !lis
-;;
 
 (* after put *)
 let remove_list_by_put t (i, j, a) =
   let a' = flip_color a in
   List.fold_left List.append [] @@
   List.map (fun (i, j) -> remove_list t (i, j, a')) @@ surround (i, j)
-;;
 
 (* before put *)
 let will_take_one t (i, j, a) =
   let r = ref false in
-  t.matrix.(i).(j) <- a ;
+  t.matrix.(i).(j) <- a;
   r := List.length @@ remove_list_by_put t (i, j, a) = 1;
-  t.matrix.(i).(j) <- 3 ;
+  t.matrix.(i).(j) <- 3;
   !r
-;;
 
 (* before put *)
 let try_suicide t (i, j, a) =
   let r = ref [] in
-  t.matrix.(i).(j) <- a ;
-  r := remove_list t (i, j, a) ;
-  t.matrix.(i).(j) <- 3 ;
+  t.matrix.(i).(j) <- a;
+  r := remove_list t (i, j, a);
+  t.matrix.(i).(j) <- 3;
   !r
-;;
 
 (* before put *)
 let is_single_suicide t (i, j, a) =
   match try_suicide t (i, j, a) with
   | [_] -> true
   | _ -> false
-;;
 
 (* before put *)
 let is_suicide t (i, j, a) =
   try_suicide t (i, j, a) = []
-;;
 
 (* before put *)
 let is_kou_take t (i, j, a) =
@@ -158,24 +144,21 @@ let can_put t (i, j, a): bool =
   | _ -> false
   in
   not @@ (stone_exists || koudate_need || is_suicide t (i, j, a))
-;;
 
 let remove_stones t xs =
   List.iter (fun (i, j) -> t.matrix.(i).(j) <- 3) xs
-;;
 
 let put_stone t (i, j, a) =
-  show t ;
+  show t;
   let was_kou_take = is_kou_take t (i, j, a) in
-  t.matrix.(i).(j) <- a ;
+  t.matrix.(i).(j) <- a;
   let xs = remove_list_by_put t (i, j, a) in
-  remove_stones t xs ;
+  remove_stones t xs;
   (* if this put is kou-take then we remember the point *)
   if was_kou_take then
     t.kou <- Some (List.hd xs)
   else 
     t.kou <- None
-;;
 
 (* after pass, it is allowed to put on kou point *)
 let pass t =
@@ -183,7 +166,6 @@ let pass t =
 
 let do_put_stones t xs =
   List.iter (fun (i, j, a) -> put_stone t (i, j, a)) xs
-;;
 
 let put_stones t xs =
   let rec zip xs ys =
@@ -193,7 +175,6 @@ let put_stones t xs =
     | ((i,j) :: xs', a :: ys') -> (i, j, a) :: (zip xs' ys') in
   let alt_color xs = zip xs (List.mapi (fun i _ -> i mod 2) xs) in
   do_put_stones t @@ alt_color xs
-;;
 
 (* ren *)
 
@@ -211,11 +192,11 @@ let create_ren mat =
     else
       if mat.(i).(j) = a then (* outside can be eliminated by this check *)
         begin
-          result.(i).(j) <- id ;
-          ignore @@ f (i+1, j, a) id ;
-          ignore @@ f (i-1, j, a) id ;
-          ignore @@ f (i, j+1, a) id ;
-          ignore @@ f (i, j-1, a) id ;
+          result.(i).(j) <- id;
+          ignore @@ f (i+1, j, a) id;
+          ignore @@ f (i-1, j, a) id;
+          ignore @@ f (i, j+1, a) id;
+          ignore @@ f (i, j-1, a) id;
           true
         end
       else
@@ -227,21 +208,19 @@ let create_ren mat =
         let a = mat.(i).(j) in
         if a < 3 then
           if f (i, j, a) !number then
-            number := !number + 1 ;
+            number := !number + 1;
       done
     done 
   in
-  g ;
+  g;
   result
-;;
 
 let show_ren t = 
-  Printf.printf "   [1 2 3 4 5 6 7 8 9 10111213141516171819]\n" ;
+  Printf.printf "   [1 2 3 4 5 6 7 8 9 10111213141516171819]\n";
   for i = 1 to (length t) - 2 do
-    Printf.printf "%2d| " i ;
+    Printf.printf "%2d| " i;
     for j = 1 to (length t) - 2 do
-      Printf.printf "%2d" @@ t.(i).(j) ;
+      Printf.printf "%2d" @@ t.(i).(j);
     done ;
-    print_newline () ;
+    print_newline ();
   done
-;;
