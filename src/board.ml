@@ -2,8 +2,8 @@ open Array
 
 type t = {
   matrix: int array array;
-  (* the last kou taken *)
-  mutable kou: (int * int) option;
+  mutable kou: (int * int) option; (* the last kou put *)
+  mutable agehama: int array;
 }
 
 let surround (i, j) = [(i+1, j); (i-1, j); (i, j+1); (i, j-1)]
@@ -21,7 +21,7 @@ let make n =
       b.(i).(j) <- 3
     done
   done ;
-  { matrix = b; kou = None }
+  { matrix = b; kou = None; agehama = Array.make 2 0; }
 
 let flip_color = function
   | 0 -> 1

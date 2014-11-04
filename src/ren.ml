@@ -1,7 +1,11 @@
 open Array
 
+type t = {
+  matrix: int array array;
+}
+
 type attr = {
-  color: int
+  color: int;
 }
 
 let show t = 
