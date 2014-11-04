@@ -19,13 +19,12 @@
 # You will usually need to modify this file for your project.
 
 # Delete this line once you have configured this file
-eprintln($(CWD)/OMakefile is not configured)
 
 ########################################################################
 # Phony targets are scoped, so you probably want to declare them first.
 #
 
-# .PHONY: all install clean
+.PHONY: all clean
 
 ########################################################################
 # Subdirectories.
@@ -33,7 +32,7 @@ eprintln($(CWD)/OMakefile is not configured)
 # If so, define the subdirectory targets and uncomment this section.
 #
 
-# .SUBDIRS:
+.SUBDIRS: src test
 
 ########################################################################
 # C configuration.
@@ -89,16 +88,16 @@ eprintln($(CWD)/OMakefile is not configured)
 #
 # This project requires ocamlfind (default - false).
 #
-# USE_OCAMLFIND = true
+USE_OCAMLFIND = true
 #
 # OCAMLPACKS[] =
 #    pack1
 #    pack2
 #
-# if $(not $(OCAMLFIND_EXISTS))
-#    eprintln(This project requires ocamlfind, but is was not found.)
-#    eprintln(You need to install ocamlfind and run "omake --configure".)
-#    exit 1
+if $(not $(OCAMLFIND_EXISTS))
+   eprintln(This project requires ocamlfind, but is was not found.)
+   eprintln(You need to install ocamlfind and run "omake --configure".)
+   exit 1
 
 #
 # Include path
@@ -116,7 +115,7 @@ BYTE_ENABLED = $(not $(OCAMLOPT_EXISTS))
 #
 # Various options
 #
-# OCAMLFLAGS    +=
+OCAMLFLAGS    += -w A -warn-error A
 # OCAMLCFLAGS   +=
 # OCAMLOPTFLAGS +=
 # OCAML_LINK_FLAGS +=

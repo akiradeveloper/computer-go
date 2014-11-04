@@ -1,0 +1,10 @@
+.PHONY: all
+
+LIB = target
+
+FILES[] =
+  board
+  ren
+  end_game
+
+OCamlLibrary($(LIB), $(FILES))
