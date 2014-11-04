@@ -1,3 +1,4 @@
+open OUnit
 open Board
 
 let t = Board.make 19

@@ -1,10 +1,9 @@
-.PHONY: all
-
-LIB = target
+.PHONY: all clean
 
 FILES[] =
   board
   ren
   end_game
 
+LIB = target
 OCamlLibrary($(LIB), $(FILES))

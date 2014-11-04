@@ -1,0 +1,19 @@
+.DEFAULT: all
+
+.PHONY: all clean
+
+OCAMLINCLUDES += ../src
+
+OCAML_LIBS += ../src/target
+
+FILES[] =
+  board_test
+
+OCAMLPACKS[] =
+  oUnit
+
+PROGRAM = test
+all: $(OCamlProgram $(PROGRAM), $(FILES))
+
+check: all
+  ./$(PROGRAM)

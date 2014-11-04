@@ -1,3 +1,4 @@
+open OUnit
 open Array
 open Board
 open Ren
