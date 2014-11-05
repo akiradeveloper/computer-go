@@ -24,15 +24,16 @@ let make n =
   { matrix = b; kou = None; agehama = Array.make 2 0; }
 
 let list_stones t =
-  let l = ref [] in
+  let lis = ref [] in
   let n = (Array.length t.matrix) in
-  for i = 1 to (n - 1) do
-    for j = 1 to (n - 1) do
+  for i = 1 to (n - 2) do
+    for j = 1 to (n - 2) do
       let e = t.matrix.(i).(j) in
       if e != 3 then
-        l := (i, j, e) :: !l
+        lis := (i, j, e) :: !lis
     done
-  done
+  done;
+  !lis
 
 let flip_color = function
   | 0 -> 1
