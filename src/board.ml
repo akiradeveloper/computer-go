@@ -23,6 +23,17 @@ let make n =
   done ;
   { matrix = b; kou = None; agehama = Array.make 2 0; }
 
+let list_stones t =
+  let l = ref [] in
+  let n = (Array.length t.matrix) in
+  for i = 1 to (n - 1) do
+    for j = 1 to (n - 1) do
+      let e = t.matrix.(i).(j) in
+      if e != 3 then
+        l := (i, j, e) :: !l
+    done
+  done
+
 let flip_color = function
   | 0 -> 1
   | 1 -> 0
