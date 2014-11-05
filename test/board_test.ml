@@ -1,3 +1,4 @@
+open Core.Std
 open OUnit
 open Board
 
@@ -9,12 +10,12 @@ open Board
 (* remove_test [(2,1,0);(2,2,1);(2,3,0);(1,1,1);(1,4,0);(1,3,1);] (1,2,0); *)
 
 let print_stones xs =
-  List.iter (fun (i,j,a) -> Printf.printf "(%d,%d,%d)" i j a) xs;
+  List.iter ~f:(fun (i,j,a) -> Printf.printf "(%d,%d,%d)" i j a) xs;
   Printf.printf "\n"
 
 let set_eq xs ys =
   let sor xs' =
-    List.sort (fun (i1,j1,_) (i2,j2,_) -> compare (pos2int (i1,j1)) (pos2int (i2,j2))) xs'
+    List.sort ~cmp:(fun (i1,j1,_) (i2,j2,_) -> compare (pos2int (i1,j1)) (pos2int (i2,j2))) xs'
   in
   (* print_stones (sor ys); *)
   (* print_stones (sor xs); *)

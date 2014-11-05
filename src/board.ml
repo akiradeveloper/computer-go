@@ -1,4 +1,5 @@
-open Array
+open Core.Std
+open Core.Std.Array
 
 type t = {
   matrix: int array array;
@@ -15,13 +16,13 @@ let surround (i, j) = [(i+1, j); (i-1, j); (i, j+1); (i, j-1)]
  * empty = 3
  *)
 let make n =
-  let b = make_matrix (n+2) (n+2) 2 in
+  let b = make_matrix ~dimx:(n+2) ~dimy:(n+2) 2 in
   for i = 1 to n do
     for j = 1 to n do
       b.(i).(j) <- 3
     done
   done ;
-  { matrix = b; kou = None; agehama = Array.make 2 0; }
+  { matrix = b; kou = None; agehama = Array.create 2 0; }
 
 let list_stones t =
   let lis = ref [] in
@@ -29,7 +30,7 @@ let list_stones t =
   for i = 1 to (n - 2) do
     for j = 1 to (n - 2) do
       let e = t.matrix.(i).(j) in
-      if e != 3 then
+      if e <> 3 then
         lis := (i, j, e) :: !lis
     done
   done;
@@ -70,12 +71,11 @@ let pos2int (i, j) = (i lsl 5) + j
 let int2pos n = (n lsr 5, n land 31)
 
 let search_hole t (i, j) =
-  List.exists (fun (i, j) -> t.matrix.(i).(j) = 3) @@ surround (i, j)
+  List.exists ~f:(fun (i, j) -> t.matrix.(i).(j) = 3) @@ surround (i, j)
 
 module IntSet = Set.Make (
   struct
-    let compare = Pervasives.compare
-    type t = int
+    type t = int with sexp, compare
   end )
 
 (* after put. find stones of the same color that can be removed. *)
@@ -85,22 +85,22 @@ let remove_list t (i, j, init) =
   let s = ref IntSet.empty in
   let rec visit (i, j, a) =
     (* Printf.printf "visit (%d,%d,%d)\n" i j a; *)
-    if a != init then () else
+    if a <> init then () else
       if out_board t.matrix (i, j) then () else
         if !found_hole then () else
           if search_hole t (i, j) then
             found_hole := true
           else
-            if IntSet.mem (pos2int (i, j)) !s then () else
+            if IntSet.mem !s (pos2int (i, j)) then () else
             begin
               (* Printf.printf "For the first time in forever ~~~\n" ; *)
               lis := (i, j) :: !lis;
 
-              s := IntSet.add (pos2int (i, j)) !s;
+              s := IntSet.add !s (pos2int (i, j));
               (* IntSet.iter (fun n -> Printf.printf "%d " n) !s ; *)
               print_newline ();
 
-              List.iter (fun (i, j) -> visit (i, j, t.matrix.(i).(j))) @@ surround (i, j)
+              List.iter ~f:(fun (i, j) -> visit (i, j, t.matrix.(i).(j))) @@ surround (i, j)
             end
   in
   visit (i, j, init);
@@ -112,8 +112,8 @@ let remove_list t (i, j, init) =
 (* after put *)
 let remove_list_by_put t (i, j, a) =
   let a' = flip_color a in
-  List.fold_left List.append [] @@
-  List.map (fun (i, j) -> remove_list t (i, j, a')) @@ surround (i, j)
+  List.fold_left ~f:List.append ~init:[] @@
+  List.map ~f:(fun (i, j) -> remove_list t (i, j, a')) @@ surround (i, j)
 
 (* before put *)
 let will_take_one t (i, j, a) =
@@ -157,7 +157,7 @@ let can_put t (i, j, a): bool =
   not @@ (stone_exists || koudate_need || is_suicide t (i, j, a))
 
 let remove_stones t xs =
-  List.iter (fun (i, j) -> t.matrix.(i).(j) <- 3) xs
+  List.iter ~f:(fun (i, j) -> t.matrix.(i).(j) <- 3) xs
 
 let put_stone t (i, j, a) =
   (* show t; *)
@@ -167,7 +167,7 @@ let put_stone t (i, j, a) =
   remove_stones t xs;
   (* if this put is kou-take then we remember the point *)
   if was_kou_take then
-    t.kou <- Some (List.hd xs)
+    t.kou <- Some (List.hd_exn xs)
   else 
     t.kou <- None
 
@@ -176,7 +176,7 @@ let pass t =
   t.kou <- None
 
 let do_put_stones t xs =
-  List.iter (fun (i, j, a) -> put_stone t (i, j, a)) xs
+  List.iter ~f:(fun (i, j, a) -> put_stone t (i, j, a)) xs
 
 let put_stones t xs =
   let rec zip xs ys =
@@ -184,5 +184,5 @@ let put_stones t xs =
     | ([], _) -> []
     | (_, []) -> []
     | ((i,j) :: xs', a :: ys') -> (i, j, a) :: (zip xs' ys') in
-  let alt_color xs = zip xs (List.mapi (fun i _ -> i mod 2) xs) in
+  let alt_color xs = zip xs (List.mapi ~f:(fun i _ -> i mod 2) xs) in
   do_put_stones t @@ alt_color xs

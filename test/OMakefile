@@ -10,6 +10,7 @@ FILES[] =
   board_test
 
 OCAMLPACKS[] =
+  core
   oUnit
 
 PROGRAM = test
