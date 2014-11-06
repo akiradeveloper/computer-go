@@ -28,7 +28,7 @@ let remove_test xs result =
     set_eq (list_stones t) result
 
 let put_stone_test =
-  "put_stone" >:::
+  "put_stone_test" >:::
     [
       "test1" >:: remove_test
       [(10,10,0);(10,9,1);(10,11,1);(9,10,1);(11,10,1)]
@@ -39,5 +39,14 @@ let put_stone_test =
       [(10,9,1);(10,11,1);(9,10,1);(10,10,0)]
       ;
     ]
+
+let kou_test = 
+  "kou_test" >::
+    fun _ ->
+      let t = Board.make 19 in
+      put_stones t [(1,2);(2,2);(2,1);(3,1);(3,2);(1,1)];
+      assert_equal false (can_put t (2,1,0));
+      put_stones t [(2,3);(3,3)];
+      assert_equal true (can_put t (2,1,0));
 
 let suite = "board_test" >::: [put_stone_test]
