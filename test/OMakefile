@@ -7,7 +7,9 @@ OCAMLINCLUDES += ../src
 OCAML_LIBS += ../src/target
 
 FILES[] =
+  suite
   board_test
+  ren_test
 
 OCAMLPACKS[] =
   core

@@ -27,8 +27,8 @@ let remove_test xs result =
     do_put_stones t xs;
     set_eq (list_stones t) result
 
-let suite = 
-  "suite" >:::
+let put_stone_test =
+  "put_stone" >:::
     [
       "test1" >:: remove_test
       [(10,10,0);(10,9,1);(10,11,1);(9,10,1);(11,10,1)]
@@ -40,4 +40,4 @@ let suite =
       ;
     ]
 
-let _ = run_test_tt_main suite
+let suite = "board_test" >::: [put_stone_test]
