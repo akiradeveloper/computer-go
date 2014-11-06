@@ -47,6 +47,7 @@ let kou_test =
       put_stones t [(1,2);(2,2);(2,1);(3,1);(3,2);(1,1)];
       assert_equal false (can_put t (2,1,0));
       put_stones t [(2,3);(3,3)];
-      assert_equal true (can_put t (2,1,0));
+      assert_equal true (can_put t (2,1,0))
+;;
 
-let suite = "board_test" >::: [put_stone_test]
+let suite = "board_test" >::: [put_stone_test;kou_test]

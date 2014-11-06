@@ -15,7 +15,9 @@ put_stone t (2,1,0);
 put_stone t (4,1,1);
 Ren.show @@ Ren.make t.matrix;
 
-let delete_color groups = List.map ~f:(List.map ~f:fun (i,j,a) -> (i,j))
+;;
+
+let delete_color = List.map ~f:(List.map ~f:fun (i,j,a) -> (i,j))
 
 let compress groups =
   List.map ~f:(List.map ~f:Board.pos2int) groups |>

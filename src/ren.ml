@@ -53,12 +53,12 @@ let make mat =
 
 let list_groups matrix =
   let n = Array.length matrix in
-  let r = Array.create len:(n-2)*(n-2) [] in
+  let r = Array.create ((n-2)*(n-2)) [] in
   for i=1 to n-2 do
     for j=1 to n-2 do
       let g = matrix.(i).(j) in
       if g <> 0 then
         r.(g) <- (i,j) :: r.(g)
     done
-  done
+  done;
   Array.to_list r
