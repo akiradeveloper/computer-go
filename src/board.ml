@@ -116,12 +116,16 @@ let remove_list_by_put t (i, j, a) =
   List.map ~f:(fun (i, j) -> remove_list t (i, j, a')) @@ surround (i, j)
 
 (* before put *)
-let will_take_one t (i, j, a) =
-  let r = ref false in
+let try_remove_list t (i, j, a) =
+  let r = ref [] in
   t.matrix.(i).(j) <- a;
-  r := List.length @@ remove_list_by_put t (i, j, a) = 1;
+  r := remove_list_by_put t (i, j, a);
   t.matrix.(i).(j) <- 3;
   !r
+
+(* before put *)
+let will_take_one t (i, j, a) =
+  List.length (try_remove_list t (i, j, a)) = 1
 
 (* before put *)
 let try_suicide t (i, j, a) =
