@@ -1,3 +1,4 @@
+open Core.Std
 open Array
 
 type t = {
@@ -61,4 +62,4 @@ let list_groups matrix =
         r.(g) <- (i,j) :: r.(g)
     done
   done;
-  Array.to_list r
+  Array.to_list r |> List.filter ~f:fun a -> (a <> [])
