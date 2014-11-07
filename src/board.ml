@@ -7,6 +7,8 @@ type t = {
   mutable agehama: int array;
 }
 
+let size t = (Array.length t.matrix) - 2
+
 let surround (i, j) = [(i+1, j); (i-1, j); (i, j+1); (i, j-1)]
 
 (*
@@ -26,9 +28,8 @@ let make n =
 
 let list_stones t =
   let lis = ref [] in
-  let n = (Array.length t.matrix) in
-  for i = 1 to (n - 2) do
-    for j = 1 to (n - 2) do
+  for i = 1 to size t do
+    for j = 1 to size t do
       let e = t.matrix.(i).(j) in
       if e <> 3 then
         lis := (i, j, e) :: !lis

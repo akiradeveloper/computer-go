@@ -1,14 +1,14 @@
+open Board
 open Core.Std
 
 let finish mat = assert false
 
 (* Chinese rule *)
-let count mat = 
+let count t = 
   let bw = Array.create 2 0 in
-  let sz = (Array.length mat) - 2 in
-  for i = 1 to sz do
-    for j = 1 to sz do
-      match mat.(i).(j) with
+  for i = 1 to size t do
+    for j = 1 to size t do
+      match t.matrix.(i).(j) with
       | 2 -> assert false
       | 3 -> assert true
       | _ as a -> bw.(a) <- bw.(a) + 1
