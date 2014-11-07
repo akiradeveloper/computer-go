@@ -148,13 +148,24 @@ let is_kou_take t (i, j, a) =
 ;;
 
 (* before put *)
-let can_put t (i, j, a): bool =
+let can_put t (i, j, a) =
   let stone_exists = t.matrix.(i).(j) < 2 in
   let koudate_need = match t.kou with
   | Some (i', j') -> (i, j) = (i', j')
   | _ -> false
   in
   not @@ (stone_exists || koudate_need || is_suicide t (i, j, a))
+
+let list_can_put t a = 
+  let r = ref [] in
+  let sz = (Array.length t.matrix) - 2 in
+  for i = 1 to sz do
+    for j = 1 to sz do
+      if can_put t (i, j, a) then
+        r := (i, j) :: !r
+    done
+  done;
+  !r
 
 let remove_stones t xs =
   List.iter ~f:(fun (i, j) -> t.matrix.(i).(j) <- 3) xs
