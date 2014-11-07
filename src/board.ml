@@ -1,5 +1,5 @@
 open Core.Std
-open Core.Std.Array
+open Array
 
 type t = {
   matrix: int array array;
