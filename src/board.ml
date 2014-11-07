@@ -63,9 +63,9 @@ let show t =
     print_newline ();
   done
 
-let out_board t = function
-  | (0, _) | (20, _) | (_, 0) | (_, 20) -> true
-  | _ -> false
+let out_board t (i, j) =
+  if i < 1 || i > size t || j < 1 || j > size t then true
+  else false
 
 let pos2int (i, j) = (i lsl 5) + j
 
@@ -87,7 +87,7 @@ let remove_list t (i, j, init) =
   let rec visit (i, j, a) =
     (* Printf.printf "visit (%d,%d,%d)\n" i j a; *)
     if a <> init then () else
-      if out_board t.matrix (i, j) then () else
+      if out_board t (i, j) then () else
         if !found_hole then () else
           if search_hole t (i, j) then
             found_hole := true
