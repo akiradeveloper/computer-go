@@ -2,14 +2,10 @@ open Board
 open Core.Std
 
 let rec inc_list a n =   
-  match n with
-  | 0 -> []
-  | _ -> a :: inc_list (a+1) (n-1) 
+  List.init n ~f:fun i -> a+i 
 
 let rec list_make a n =
-  match n with 
-  | 0 -> []
-  | _ -> a :: list_make a (n-1)
+  List.init n ~f:fun i -> a
 
 let to_color t xs =
   List.map xs ~f:fun (i,j) ->
