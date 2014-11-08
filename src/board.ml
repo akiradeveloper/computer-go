@@ -1,27 +1,39 @@
 open Core.Std
 open Array
 
+type color = Black   |
+             White   |
+             Gray    | (* Dame *)
+             Empty   |
+             Outside
+
 type t = {
-  matrix: int array array;
+  matrix: color array array;
   mutable kou: (int * int) option; (* the last kou put *)
   mutable agehama: int array;
 }
+
+let bw2int c =
+  match c with
+  | Black -> 0
+  | White -> 1
+  | _     -> assert false
+
+let int2bw i =
+  match i with
+  | 0 -> Black
+  | 1 -> White
+  | _ -> assert false
 
 let size t = (Array.length t.matrix) - 2
 
 let surround (i, j) = [(i+1, j); (i-1, j); (i, j+1); (i, j-1)]
 
-(*
- * black = 0
- * while = 1
- * outside = 2
- * empty = 3
- *)
 let make n =
-  let b = make_matrix ~dimx:(n+2) ~dimy:(n+2) 2 in
+  let b = make_matrix ~dimx:(n+2) ~dimy:(n+2) Outside in
   for i = 1 to n do
     for j = 1 to n do
-      b.(i).(j) <- 3
+      b.(i).(j) <- Empty
     done
   done ;
   { matrix = b; kou = None; agehama = Array.create 2 0; }
@@ -40,15 +52,15 @@ let list_stones t =
   for i = 1 to size t do
     for j = 1 to size t do
       let e = t.matrix.(i).(j) in
-      if e <> 3 then
+      if e <> Empty then
         lis := (i, j, e) :: !lis
     done
   done;
   !lis
 
 let flip_color = function
-  | 0 -> 1
-  | 1 -> 0
+  | Black -> White
+  | White -> Black
   | _ -> assert false
 
 let show t = 
@@ -59,9 +71,10 @@ let show t =
   in
   Printf.printf "   [1 2 3 4 5 6 7 8 9 10111213141516171819]\n" ;
   let p i = match i with
-  | 0 -> '@'
-  | 1 -> 'O'
-  | 3 -> '+'
+  | Black -> '@'
+  | White -> 'O'
+  | Gray  -> 'x'
+  | Empty -> '+'
   | _ -> assert false
   in
   for i = 1 to (length t.matrix) - 2 do
@@ -81,7 +94,7 @@ let pos2int (i, j) = (i lsl 5) + j
 let int2pos n = (n lsr 5, n land 31)
 
 let search_hole t (i, j) =
-  List.exists ~f:(fun (i, j) -> t.matrix.(i).(j) = 3) @@ surround (i, j)
+  List.exists ~f:(fun (i, j) -> t.matrix.(i).(j) = Empty) @@ surround (i, j)
 
 module IntSet = Set.Make (
   struct
@@ -130,7 +143,7 @@ let try_remove_list t (i, j, a) =
   let r = ref [] in
   t.matrix.(i).(j) <- a;
   r := remove_list_by_put t (i, j, a);
-  t.matrix.(i).(j) <- 3;
+  t.matrix.(i).(j) <- Empty;
   !r
 
 (* before put *)
@@ -142,14 +155,14 @@ let try_suicide t (i, j, a) =
   let r = ref [] in
   t.matrix.(i).(j) <- a;
   r := remove_list t (i, j, a);
-  t.matrix.(i).(j) <- 3;
+  t.matrix.(i).(j) <- Empty;
   !r
 
 (* before put *)
 let is_single_suicide t (i, j, a) =
   match try_suicide t (i, j, a) with
   | [_] -> true
-  | _ -> false
+  | _   -> false
 
 (* before put *)
 let is_suicide t (i, j, a) =
@@ -161,14 +174,20 @@ let is_kou_take t (i, j, a) =
   will_take_one t (i, j, a)
 ;;
 
+let stone_exists' a = 
+  match a with 
+  | Black | White | Gray -> true
+  | _ -> false
+
+let stone_exists t (i, j) = stone_exists' t.matrix.(i).(j)
+
 (* before put *)
 let can_put t (i, j, a) =
-  let stone_exists = t.matrix.(i).(j) < 2 in
   let koudate_need = match t.kou with
   | Some (i', j') -> (i, j) = (i', j')
   | _ -> false
   in
-  not @@ (stone_exists || koudate_need || is_suicide t (i, j, a))
+  not @@ (stone_exists t (i, j) || koudate_need || is_suicide t (i, j, a))
 
 let list_can_put t a = 
   let r = ref [] in
@@ -182,7 +201,7 @@ let list_can_put t a =
   !r
 
 let remove_stones t xs =
-  List.iter ~f:(fun (i, j) -> t.matrix.(i).(j) <- 3) xs
+  List.iter ~f:(fun (i, j) -> t.matrix.(i).(j) <- Empty) xs
 
 let put_stone t (i, j, a) =
   (* show t; *)
@@ -204,10 +223,9 @@ let do_put_stones t xs =
   List.iter ~f:(fun (i, j, a) -> put_stone t (i, j, a)) xs
 
 let put_stones t xs =
-  let rec zip xs ys =
-    match (xs, ys) with
+  let rec zip xs ys = match (xs, ys) with
     | ([], _) -> []
     | (_, []) -> []
     | ((i,j) :: xs', a :: ys') -> (i, j, a) :: (zip xs' ys') in
-  let alt_color xs = zip xs (List.mapi ~f:(fun i _ -> i mod 2) xs) in
+  let alt_color xs = zip xs (List.mapi ~f:(fun i _ -> int2bw (i mod 2)) xs) in
   do_put_stones t @@ alt_color xs

@@ -1,4 +1,5 @@
 open Core.Std
+open Board
 open Array
 
 type t = {
@@ -27,7 +28,8 @@ let make mat =
     if result.(i).(j) > 0 then
       false
     else
-      if mat.(i).(j) = a then (* outside can be eliminated by this check *)
+      (* Outside is eliminated by this check *)
+      if mat.(i).(j) = a then
         begin
           result.(i).(j) <- id;
           ignore @@ f (i+1, j, a) id;
@@ -43,7 +45,8 @@ let make mat =
     for i = 1 to (n - 2) do
       for j = 1 to (n - 2) do
         let a = mat.(i).(j) in
-        if a < 3 then
+        if stone_exists' a then
+          (* Not empty *)
           if f (i, j, a) !number then
             number := !number + 1;
       done
@@ -55,8 +58,8 @@ let make mat =
 let list_groups matrix =
   let n = Array.length matrix in
   let r = Array.create ((n-2)*(n-2)) [] in
-  for i=1 to n-2 do
-    for j=1 to n-2 do
+  for i = 1 to n-2 do
+    for j = 1 to n-2 do
       let g = matrix.(i).(j) in
       if g <> 0 then
         r.(g) <- (i,j) :: r.(g)

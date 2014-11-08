@@ -31,12 +31,12 @@ let put_stone_test =
   "put_stone_test" >:::
     [
       "test1" >:: remove_test
-      [(10,10,0);(10,9,1);(10,11,1);(9,10,1);(11,10,1)]
-      [(10,9,1);(10,11,1);(9,10,1);(11,10,1)]
+      [(10,10,Black);(10,9,White);(10,11,White);(9,10,White);(11,10,White)]
+      [(10,9,White);(10,11,White);(9,10,White);(11,10,White)]
       ;
       "test2" >:: remove_test
-      [(10,9,1);(10,11,1);(9,10,1);(10,10,0)]
-      [(10,9,1);(10,11,1);(9,10,1);(10,10,0)]
+      [(10,9,White);(10,11,White);(9,10,White);(10,10,Black)]
+      [(10,9,White);(10,11,White);(9,10,White);(10,10,Black)]
       ;
     ]
 
@@ -45,9 +45,9 @@ let kou_test =
     fun _ ->
       let t = Board.make 19 in
       put_stones t [(1,2);(2,2);(2,1);(3,1);(3,2);(1,1)];
-      assert_equal false (can_put t (2,1,0));
+      assert_equal false (can_put t (2,1,Black));
       put_stones t [(2,3);(3,3)];
-      assert_equal true (can_put t (2,1,0))
+      assert_equal true (can_put t (2,1,Black))
 ;;
 
 let suite = "board_test" >::: [put_stone_test;kou_test]
