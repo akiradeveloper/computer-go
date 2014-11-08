@@ -1,7 +1,69 @@
 open Board
 open Core.Std
 
+let rec inc_list a n =   
+  match n with
+  | 0 -> []
+  | _ -> a :: inc_list (a+1) (n-1) 
+
+let rec list_make a n =
+  match n with 
+  | 0 -> []
+  | _ -> a :: list_make a (n-1)
+
+let to_color t xs =
+  List.map xs ~f:fun (i,j) ->
+    (t.matrix.(i).(j))
+
+let ray_up t (i, j) =
+  let n = i in
+  List.zip_exn (inc_list 0 n) (list_make j n) |>
+  to_color t |>
+  List.rev 
+
+let ray_down t (i, j) =
+  let n = (size t) - i - 1 in
+  List.zip_exn (inc_list (i+1) n) (list_make j n) |>
+  to_color t
+
+let ray_left t (i, j) = 
+  let n = j in
+  List.zip_exn (inc_list 0 n) (list_make i n) |>
+  to_color t
+
+let ray_right t (i, j) =
+  let n = (size t) - j - 1 in
+  List.zip_exn (inc_list (j+1) n) (list_make i n) |>
+  to_color t
+
+let list_ray_hit t (i, j) =
+  let p = List.find_exn ~f:(fun a -> a <> 2)
+  in
+  [
+    p (ray_up t (i,j));
+    p (ray_down t (i,j));
+    p (ray_left t (i,j));
+    p (ray_right t (i,j));
+  ]
+
+let is_dame' xs =
+  match (List.find ~f:(fun a -> a = 0) xs, List.find ~f:(fun a -> a = 1) xs) with
+  | (Some _, Some _) -> true
+  | _ -> false
+
+(* In chinese rule. dame is possessed by both players and
+ * the definition is a point surrounded by living stones *)
+let is_dame t (i, j) =
+  list_ray_hit t (i, j) |> is_dame'
+
 let finish mat = assert false
+
+
+let list_dame = assert false
+
+let fill_dame t = assert false
+
+let fill t = assert false
 
 (* Chinese rule *)
 let count t = 
