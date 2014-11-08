@@ -208,6 +208,7 @@ let put_stone t (i, j, a) =
   let was_kou_take = is_kou_take t (i, j, a) in
   t.matrix.(i).(j) <- a;
   let xs = remove_list_by_put t (i, j, a) in
+  t.agehama.(bw2int a) <- t.agehama.(bw2int a) + (List.length xs);
   remove_stones t xs;
   (* if this put is kou-take then we remember the point *)
   if was_kou_take then
