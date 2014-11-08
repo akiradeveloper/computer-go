@@ -56,10 +56,10 @@ let is_dame' xs =
 let is_dame t (i, j) =
   list_ray_hit t (i, j) |> is_dame'
 
+let list_dame t =
+  list_locs t |> List.filter ~f:(is_dame t)
+
 let finish mat = assert false
-
-
-let list_dame = assert false
 
 let fill_dame t = assert false
 

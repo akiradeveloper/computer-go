@@ -26,6 +26,15 @@ let make n =
   done ;
   { matrix = b; kou = None; agehama = Array.create 2 0; }
 
+let list_locs t =
+  let lis = ref [] in    
+  for i = 1 to size t do
+    for j = 1 to size t do 
+      lis := (i, j) :: !lis
+    done
+  done;
+  !lis
+      
 let list_stones t =
   let lis = ref [] in
   for i = 1 to size t do

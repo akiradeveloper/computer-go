@@ -7,3 +7,6 @@ FILES[] =
 
 LIB = target
 OCamlLibrary($(LIB), $(FILES))
+
+# clean: $(LIB)
+#   rm -f $(dependencies-proper $(LIB))
