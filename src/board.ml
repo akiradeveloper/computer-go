@@ -10,7 +10,7 @@ type color = Black   |
 type t = {
   matrix: color array array;
   mutable kou: (int * int) option; (* the last kou put *)
-  mutable agehama: int array;
+  agehama: int array;
 }
 
 let bw2int c =
