@@ -54,14 +54,24 @@ let is_dame t (i, j) = list_ray_hit t (i, j) |> is_dame'
 
 let list_dame t = list_locs t |> List.filter ~f:(is_dame t)
 
-let finish mat = assert false
+let fill_dame t = List.iter (list_dame t) ~f:fun (i, j) -> 
+  t.matrix.(i).(j) <- Gray
 
-let fill_dame t = assert false
+let can_fill_black t (i, j) =
+  surround (i, j) |>
+  List.map ~f:(fun (i,j) -> t.matrix.(i).(j)) |>
+  List.exists ~f:(fun a -> a = White) |>
+  not
 
-let fill t = assert false
+let fill_black t =
+  List.iter (list_locs t) ~f:fun (i, j) ->
+    if can_fill_black t (i, j) then
+      t.matrix.(i).(j) <- Black
+
+let fill t = fill_dame t; fill_black t
 
 (* Chinese rule *)
-let black_count t = 
+let count_black t = 
   let r = ref 0. in
   for i = 1 to size t do
     for j = 1 to size t do
