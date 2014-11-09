@@ -23,6 +23,7 @@ let count_test =
         let t = Board.make 9 in
         Board.do_put_stones t
         [(7,3,White);(7,4,White);(7,5,White);(7,6,White);(7,7,White);(7,8,White);(7,9,White);(8,3,White);(9,3,White);(9,6,White);(9,7,White);(9,8,White);
+        (6,1,White);(7,2,White);(6,3,White);
         (8,4,Black);(8,5,Black);(8,6,Black);(8,7,Black);(8,8,Black);(8,9,Black);(9,4,Black);
         (5,1,Black);(5,2,Black);(5,3,Black);(5,4,Black);(5,5,Black);(5,6,Black);(5,7,Black);(5,8,Black);(5,9,Black)];
         Board.show t;
