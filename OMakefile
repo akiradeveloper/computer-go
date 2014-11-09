@@ -120,6 +120,9 @@ OCAMLOPTFLAGS += -thread
 # OCAML_BYTE_LINK_FLAGS +=
 # OCAML_NATIVE_LINK_FLAGS +=
 
+clean:
+	rm -f $(filter-proper-targets $(ls R, .))
+
 # Note: the location is important. There is state.
 # This will apply the preceding setting to the subdirectories specified.
 .SUBDIRS: src test

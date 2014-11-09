@@ -1,12 +1,9 @@
 .PHONY: all clean
 
 FILES[] =
-  board
-  ren
-  end_game
+	board
+	ren
+	end_game
 
 LIB = target
 OCamlLibrary($(LIB), $(FILES))
-
-# clean: $(LIB)
-#   rm -f $(dependencies-proper $(LIB))
