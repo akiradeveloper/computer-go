@@ -2,13 +2,6 @@ open Core.Std
 open OUnit
 open Board
 
-(* remove_test [(10,10,0);(10,9,1);(10,11,1);(9,10,1)] (11,10,1); *)
-(* remove_test [(10,9,1);(10,11,1);(9,10,1)] (10,10,0); *)
-(* remove_test [(8,1,1);(10,1,1);(9,2,1)] (9,1,0); *)
-(* remove_test [(10,10,0);(11,10,0);(9,10,1);(10,9,1);(10,11,1);(11,9,1);(11,11,1)] (12,10,1); *)
-(* remove_test [(9,1,0);(8,1,0);(7,1,1);(10,1,1);(8,2,1)] (9,2,1); *)
-(* remove_test [(2,1,0);(2,2,1);(2,3,0);(1,1,1);(1,4,0);(1,3,1);] (1,2,0); *)
-
 let print_stones xs =
   List.iter ~f:(fun (i,j,a) -> Printf.printf "(%d,%d,%d)" i j a) xs;
   Printf.printf "\n"
@@ -38,6 +31,21 @@ let put_stone_test =
       [(10,9,White);(10,11,White);(9,10,White);(10,10,Black)]
       [(10,9,White);(10,11,White);(9,10,White);(10,10,Black)]
       ;
+      "test3" >:: remove_test
+      [(9,1,Black);(8,1,Black);(7,1,White);(10,1,White);(8,2,White);(9,1,White)]
+      [(7,1,White);(10,1,White);(8,2,White);(9,1,White)]
+      ;
+      "test4" >:: remove_test
+      [(9,1,Black);(8,1,White);(10,1,White);(9,2,White)]
+      [(8,1,White);(10,1,White);(9,2,White)]
+      ;
+      "test5" >:: remove_test
+      [(10,10,Black);(11,10,Black);(9,10,White);(10,9,White);(10,11,White);(11,9,White);(11,11,White);(12,10,White)]
+      [(9,10,White);(10,9,White);(10,11,White);(11,9,White);(11,11,White);(12,10,White)]
+      ;
+      "test6" >:: remove_test
+      [(2,1,Black);(2,2,White);(2,3,Black);(1,1,White);(1,4,Black);(1,3,White);(1,2,Black)]
+      [(2,1,Black);(2,2,White);(2,3,Black);(1,4,Black);(1,2,Black)]
     ]
 
 let kou_test = 
