@@ -22,9 +22,9 @@ let count_test =
       "test2" >:: (fun _ ->
         let t = Board.make 5 in
         put_stones t [(3,1);(2,1);(3,2);(2,2);(3,3);(2,3);(3,4);(2,4);(3,5);(2,5)];
-        show t;
+        (* show t; *)
         fill t;
-        show t;
+        (* show t; *)
         assert_equal 15. (count_black t))
       ;
       "test3" >:: (fun _ ->

@@ -62,17 +62,14 @@ let fill_dame t = List.iter (list_dame t) ~f:fun (i, j) ->
 let can_fill_black t (i, j) =
   stone_exists t (i,j) |> not
   &&
-  surround (i, j) |>
-  List.map ~f:(fun (i,j) -> t.matrix.(i).(j)) |>
+  list_ray_hit t (i,j) |>
   List.exists ~f:(fun a -> a = Black)
-
-(* FIXME *)
+  
 let fill_black t =
   list_locs t |>
   List.filter ~f:(is_empty t) |>
   List.iter ~f:fun (i, j) ->
     if can_fill_black t (i, j) then begin
-      (* Printf.printf "(%d,%d)" i j; *)
       t.matrix.(i).(j) <- Black
     end
 
