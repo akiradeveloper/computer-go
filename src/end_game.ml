@@ -24,13 +24,13 @@ let ray_down t (i, j) =
 
 let ray_left t (i, j) = 
   let n = j in
-  List.zip_exn (inc_list 0 n) (list_make i n) |>
+  List.zip_exn (list_make i n) (inc_list 0 n) |>
   to_color t |>
   List.rev
 
 let ray_right t (i, j) =
   let n = (size t) + 1 - j in
-  List.zip_exn (inc_list (j+1) n) (list_make i n) |>
+  List.zip_exn (list_make i n ) (inc_list (j+1) n) |>
   to_color t
 
 let list_ray_hit t (i, j) =
@@ -52,7 +52,9 @@ let is_dame' xs =
  * the definition is a point surrounded by living stones *)
 let is_dame t (i, j) = list_ray_hit t (i, j) |> is_dame'
 
-let list_dame t = list_locs t |> List.filter ~f:(is_dame t)
+let list_dame t = list_locs t |>
+                  List.filter ~f:(is_empty t) |>
+                  List.filter ~f:(is_dame t)
 
 let fill_dame t = List.iter (list_dame t) ~f:fun (i, j) -> 
   t.matrix.(i).(j) <- Gray
@@ -60,11 +62,14 @@ let fill_dame t = List.iter (list_dame t) ~f:fun (i, j) ->
 let can_fill_black t (i, j) =
   surround (i, j) |>
   List.map ~f:(fun (i,j) -> t.matrix.(i).(j)) |>
-  List.exists ~f:(fun a -> a = White) |>
-  not
+  List.exists ~f:(fun a -> a = White) |> not
+  &&
+  stone_exists t (i,j) |> not
 
 let fill_black t =
-  List.iter (list_locs t) ~f:fun (i, j) ->
+  list_locs t |>
+  List.filter ~f:(is_empty t) |>
+  List.iter ~f:fun (i, j) ->
     if can_fill_black t (i, j) then
       t.matrix.(i).(j) <- Black
 

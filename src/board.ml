@@ -181,6 +181,8 @@ let stone_exists' a =
 
 let stone_exists t (i, j) = stone_exists' t.matrix.(i).(j)
 
+let is_empty t (i,j) = not (stone_exists t (i,j))
+
 (* before put *)
 let can_put t (i, j, a) =
   let koudate_need = match t.kou with
