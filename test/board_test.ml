@@ -43,11 +43,19 @@ let put_stone_test =
 let kou_test = 
   "kou_test" >::
     fun _ ->
-      let t = Board.make 19 in
+      let t = Board.make 9 in
       put_stones t [(1,2);(2,2);(2,1);(3,1);(3,2);(1,1)];
       assert_equal false (can_put t (2,1,Black));
       put_stones t [(2,3);(3,3)];
       assert_equal true (can_put t (2,1,Black))
-;;
 
-let suite = "board_test" >::: [put_stone_test;kou_test]
+let agehama_test =
+  "agehama_test" >::
+    fun _ ->
+      let t = Board.make 9 in
+      put_stones t [(1,2);(2,2);(2,1);(3,1);(3,2);(1,1)];
+      assert_equal 1 t.agehama.(bw2int White);
+      put_stones t [(2,3);(3,3)];
+      assert_equal 1 t.agehama.(bw2int Black)
+
+let suite = "board_test" >::: [put_stone_test;kou_test;agehama_test]
