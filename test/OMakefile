@@ -1,6 +1,6 @@
 .DEFAULT: all
 
-.PHONY: all clean
+.PHONY: all
 
 OCAMLINCLUDES += ../src
 
