@@ -81,4 +81,5 @@ let count_black t =
       | White | Empty -> assert true
       | Outside       -> assert false
     done
-  done
+  done;
+  !r

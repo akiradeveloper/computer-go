@@ -10,6 +10,7 @@ FILES[] =
 	suite
 	board_test
 	ren_test
+	end_game_test
 
 OCAMLPACKS[] =
 	core
