@@ -18,7 +18,7 @@ let ray_up t (i, j) =
   List.rev 
 
 let ray_down t (i, j) =
-  let n = (size t) - i - 1 in
+  let n = (size t) + 1 - i in
   List.zip_exn (inc_list (i+1) n) (list_make j n) |>
   to_color t
 
@@ -29,7 +29,7 @@ let ray_left t (i, j) =
   List.rev
 
 let ray_right t (i, j) =
-  let n = (size t) - j - 1 in
+  let n = (size t) + 1 - j in
   List.zip_exn (inc_list (j+1) n) (list_make i n) |>
   to_color t
 

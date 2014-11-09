@@ -77,9 +77,9 @@ let show t =
   | Empty -> '+'
   | _ -> assert false
   in
-  for i = 1 to (size t) - 2 do
+  for i = 1 to (size t)  do
     Printf.printf "%2d| " i;
-    for j = 1 to (size t) - 2 do
+    for j = 1 to (size t)  do
       Printf.printf "%c " @@ p t.matrix.(i).(j);
     done;
     print_newline ();
